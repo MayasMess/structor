@@ -1,5 +1,6 @@
 # Structor
 Simple library that allow you to create templates of folders/files structure and generate them from a cli (like done in angular, django, react...)
+
 ![image](static/struct_img.png)
 
 Installation (not deployed yet):
