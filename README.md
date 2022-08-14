@@ -12,7 +12,7 @@ Installation (not deployed yet):
 
 Create your template
 -
-Create your "template.yaml" file in a folder name ".structor" or you can simply run the command "structor" without arguments in your terminal. this will generate the folder and the yaml file.
+Create your "template.yaml" file in a folder named ".structor" or you can simply run the command "structor" without arguments in your terminal. this will generate the folder and the yaml file.
 - In this example, the command "structor init" will create all the folders and the files in the init section and the command "structor startapp" will create new modules/components
 ```yaml
 ---
