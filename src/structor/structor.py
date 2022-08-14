@@ -1,15 +1,36 @@
 import os.path
 import sys
 from dataclasses import dataclass
+from typing import Dict
+
+import yaml
 
 from .custom_exceptions import CommandDoesNotExist
 from .utils import create_dirs_if_not_exists, create_file_if_not_exists, struct_param
 
 
 @dataclass
+class File:
+    name: str
+    content: str
+
+
+@dataclass
 class Structure:
     commands: dict
     replacement: dict
+    file_template: Dict[str, File]
+
+
+def read_template_if_exists() -> dict:
+    """
+    Read yaml template if it exists and return a parsed dict
+    """
+    for template in ['template.yaml', 'template.yml']:
+        if os.path.exists(os.path.join(os.getcwd(), f'.structor/{template}')):
+            with open(os.path.join(os.getcwd(), f'.structor/{template}')) as tmpl:
+                parsed_yaml = yaml.safe_load(tmpl)
+                return parsed_yaml
 
 
 def structure_interpreter(structure_dict: dict, *args) -> Structure:
@@ -28,7 +49,7 @@ def structure_interpreter(structure_dict: dict, *args) -> Structure:
                 replacement[key] = values.replace(struct_param(index), args[index])
 
     # Replace all variables values in the dict structure
-    commands = {key: value for key, value in structure_dict.items() if key != "replacement"}
+    commands = {key: value for key, value in structure_dict.get('commands').items()}
     replaced_commands = {}
     for command, command_value in commands.items():
         replaced_commands[command] = {}
@@ -40,8 +61,21 @@ def structure_interpreter(structure_dict: dict, *args) -> Structure:
                 new_files = [file.replace(rep, new_rep) if rep in file else file for file in files]
                 replaced_commands[command][new_path] = new_files
 
+    # Replace all variable in file templates
+    replaced_file_template = {}
+    if structure_dict.get('file-template') is not None:
+        file_template = {key: value for key, value in structure_dict.get('file-template').items()}
+        for file, tmplt in file_template.items():
+            with open(os.path.join(os.getcwd(), f".structor/{tmplt}"), mode='r') as file_content_io:
+                file_content = file_content_io.read()
+                for rep, new_rep in replacement.items():
+                    file_breadcrumb = file.replace(rep, new_rep)
+                    file_content = file_content.replace(rep, new_rep)
+                file_object = File(name=tmplt, content=file_content)
+                replaced_file_template[file_breadcrumb] = file_object
+
     # Create the structure object
-    structure_res = Structure(replaced_commands, replacement)
+    structure_res = Structure(replaced_commands, replacement, replaced_file_template)
     return structure_res
 
 
@@ -62,8 +96,16 @@ def generate(structure_obj: Structure, command: str) -> None:
             create_file_if_not_exists(os.path.join(path_dirs, file))
 
 
+def run(*args):
+    template = read_template_if_exists()
+    if template is None:
+        from src.structor.base_commands import BASE
+        structure = structure_interpreter(BASE, *args[2:])
+    else:
+        structure = structure_interpreter(template, *args[2:])
+    generate(structure, args[1])
+
+
 if __name__ == '__main__':
-    from src.structor.base_commands import BASE
     if len(sys.argv) >= 2:
-        structure = structure_interpreter(BASE, *sys.argv[2:])
-        generate(structure, sys.argv[1])
+        run(*sys.argv)
