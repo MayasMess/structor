@@ -1,24 +1,27 @@
 BASE = {
     "commands": {
-        "init": {
-            "src": [
+        "startproject": {
+            "app": [
                 "__init__.py",
             ],
-            "src > config": [
+            "app > config": [
                 "__init__.py",
                 "config.py",
                 "local_config.py.dist",
             ],
-            "src > modules": [
+            "app > modules": [
                 "__init__.py",
             ],
-            "src > static": [],
+            "app > static": [],
         },
 
         "startapp": {
-            "src > modules > {{APP-NAME}}": [
+            "app > modules > {{APP-NAME}}": [
                 "__init__.py",
                 "{{APP-NAME}}.py",
+                "models.py",
+                "views.py",
+                "controllers.py",
             ]
         },
     },

@@ -1,4 +1,4 @@
-class CommandDoesNotExist(Exception):
+class TemplateError(Exception):
     """Empty directory exception"""
-    def __init__(self, command: str):
-        super(CommandDoesNotExist, self).__init__(f"The command {command} does not exist")
+    def __init__(self):
+        super(TemplateError, self).__init__(f"There is an error in your template...")

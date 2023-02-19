@@ -1,20 +1,23 @@
 ---
 commands:
-  init:
-    src:
+  startapp:
+    app > modules > {{APP-NAME}}:
     - __init__.py
-    src > config:
+    - '{{APP-NAME}}.py'
+    - models.py
+    - views.py
+    - controllers.py
+  startproject:
+    app:
+    - __init__.py
+    app > config:
     - __init__.py
     - config.py
     - local_config.py.dist
-    src > modules:
+    app > modules:
     - __init__.py
-    src > static: []
-  startapp:
-    src > modules > {{APP-NAME}}:
-    - __init__.py
-    - "{{APP-NAME}}.py"
+    app > static: []
 replacement:
-  "{{APP-NAME}}": "**1"
+  '{{APP-NAME}}': '**1'
 file-template:
-  src > modules > {{APP-NAME}} > {{APP-NAME}}.py: "my_template_file.py.struct"
+  app > modules > {{APP-NAME}} > {{APP-NAME}}.py: "my_template_file.py.struct"

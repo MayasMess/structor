@@ -1,12 +1,17 @@
 import os.path
-import sys
+import re
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, Optional
 
 import yaml
+import typer
+from click.exceptions import UsageError, BadParameter
 
-from .custom_exceptions import CommandDoesNotExist
-from .utils import create_dirs_if_not_exists, create_file_if_not_exists, struct_param
+from src.structor import custom_exceptions as ce
+from src.structor import utils
+from src.structor import base_commands
+
+app = typer.Typer(pretty_exceptions_show_locals=False)
 
 
 @dataclass
@@ -20,6 +25,7 @@ class Structure:
     commands: dict
     replacement: dict
     file_template: Dict[str, File]
+    template: dict
 
 
 def read_template_if_exists() -> dict:
@@ -33,7 +39,7 @@ def read_template_if_exists() -> dict:
                 return parsed_yaml
 
 
-def structure_interpreter(structure_dict: dict, *args) -> Structure:
+def structure_interpreter(structure_dict: dict, args: list[str] = None) -> Structure:
     """
     Interpret a dict of commands and return a structure object
     :param structure_dict: dict of commands and values to replace
@@ -46,7 +52,7 @@ def structure_interpreter(structure_dict: dict, *args) -> Structure:
     if args:
         for index, arg in enumerate(args):
             for key, values in structure_dict.get('replacement').items():
-                replacement[key] = values.replace(struct_param(index), args[index])
+                replacement[key] = values.replace(utils.struct_param(index), args[index])
 
     # Replace all variables values in the dict structure
     commands = {key: value for key, value in structure_dict.get('commands').items()}
@@ -75,37 +81,75 @@ def structure_interpreter(structure_dict: dict, *args) -> Structure:
                 replaced_file_template[file_breadcrumb] = file_object
 
     # Create the structure object
-    structure_res = Structure(replaced_commands, replacement, replaced_file_template)
+    structure_res = Structure(replaced_commands, replacement, replaced_file_template, structure_dict)
     return structure_res
 
 
-def generate(structure_obj: Structure, command: str) -> None:
+def _get_needed_inner_commands(structure: Structure, command: str) -> list[str]:
+
+    def matching_name(val: str) -> str:
+        result = None
+        split_1 = val.split('{{')
+        if len(split_1) == 2:
+            split_2 = split_1[1].split('}}')
+            if len(split_2) == 2:
+                result = split_2[0]
+        return result
+
+    needed_commands = []
+    for key, value in structure.template.get('commands').get(command).items():
+        needed_command_key = matching_name(key)
+        if needed_command_key is not None:
+            needed_commands.append(needed_command_key)
+        for x in value:
+            needed_command_value = matching_name(x)
+            if needed_command_value is not None:
+                needed_commands.append(needed_command_value)
+
+    return list(set(needed_commands))
+
+
+def generate(structure_obj: Structure, command: str, params: list[str] = None) -> None:
     """
     Generate all the folders and files
     :param structure_obj: structure object with all necessary data
-    :param command: all possible command in the cli
+    :param command: main command
+    :param params: all possible command in the cli
     :return: None
     """
+    if params is None:
+        params = []
     if command not in structure_obj.commands:
-        raise CommandDoesNotExist(f"The command {command} does not exist")
+        raise BadParameter(f"The command {params} does not exist")
+
+    needed_commands = _get_needed_inner_commands(structure_obj, command)
+
+    if len(needed_commands) != len(params):
+        raise UsageError(f"Matching parameters error... needed => {needed_commands}, given => {params}")
 
     for folders, files in structure_obj.commands.get(command).items():
         path_dirs = os.path.join(os.getcwd(), "/".join(folders.split('>')).replace(" ", ""))
-        create_dirs_if_not_exists(path_dirs)
+        utils.create_dirs_if_not_exists(path_dirs)
         for file in files:
-            create_file_if_not_exists(os.path.join(path_dirs, file))
+            utils.create_file_if_not_exists(os.path.join(path_dirs, file))
 
 
-def run(*args):
+@app.command()
+def init():
+    utils.create_dirs_if_not_exists(f"{os.getcwd()}/.structor")
+    with open(f"{os.getcwd()}/.structor/template.yaml", 'w') as yaml_file:
+        yaml.dump(base_commands.BASE, yaml_file, default_flow_style=False)
+
+
+@app.command()
+def run(params: list[str]):
+    command = params.pop(0)
     template = read_template_if_exists()
     if template is None:
-        from src.structor.base_commands import BASE
-        structure = structure_interpreter(BASE, *args[2:])
-    else:
-        structure = structure_interpreter(template, *args[2:])
-    generate(structure, args[1])
+        raise UsageError("Plese run the 'ini' command to generate '.structor/template.yaml' file")
+    structure = structure_interpreter(template, params)
+    generate(structure, command, params)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) >= 2:
-        run(*sys.argv)
+    app()
