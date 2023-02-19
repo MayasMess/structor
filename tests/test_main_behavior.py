@@ -42,7 +42,7 @@ class TestStructor(TestCase):
         self.assertEqual(expected_result, structure_1.commands.get('addmodule'))
         expected_result = {
             'app > modules > my_first_app > my_first_app.py': File('my_template_file.py.struct',
-                                                                   'def my_first_app:\n    pass')}
+                                                                   'def my_first_app():\n    pass')}
         self.assertEqual(expected_result, structure_1.file_template)
 
     def test_read_template_if_exists(self):
