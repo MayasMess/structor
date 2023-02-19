@@ -1,15 +1,13 @@
 import os.path
-import re
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Dict
 
-import yaml
 import typer
+import yaml
 from click.exceptions import UsageError, BadParameter
 
-from src.structor import custom_exceptions as ce
-from src.structor import utils
 from src.structor import base_commands
+from src.structor import utils
 
 app = typer.Typer(pretty_exceptions_show_locals=False)
 
