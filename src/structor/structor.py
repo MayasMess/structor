@@ -109,6 +109,13 @@ def _get_needed_inner_commands(structure: Structure, command: str) -> list[str]:
     return list(set(needed_commands))
 
 
+def add_content_to_files(structure: Structure):
+    if structure.file_template:
+        for folder, file in structure.file_template.items():
+            with open(os.path.join(os.getcwd(), "/".join(folder.split('>')).replace(" ", "")), mode="w") as f:
+                f.write(file.content)
+
+
 def generate(structure_obj: Structure, command: str, params: list[str] = None) -> None:
     """
     Generate all the folders and files
@@ -127,11 +134,14 @@ def generate(structure_obj: Structure, command: str, params: list[str] = None) -
     if len(needed_commands) != len(params):
         raise UsageError(f"Matching parameters error... needed => {needed_commands}, given => {params}")
 
-    for folders, files in structure_obj.commands.get(command).items():
-        path_dirs = os.path.join(os.getcwd(), "/".join(folders.split('>')).replace(" ", ""))
+    for folder, files in structure_obj.commands.get(command).items():
+        path_dirs = os.path.join(os.getcwd(), "/".join(folder.split('>')).replace(" ", ""))
         utils.create_dirs_if_not_exists(path_dirs)
         for file in files:
             utils.create_file_if_not_exists(os.path.join(path_dirs, file))
+
+    # Add content to file if file_template is added
+    add_content_to_files(structure_obj)
 
 
 @app.command()

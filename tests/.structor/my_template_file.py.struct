@@ -1,2 +1,2 @@
-def {{APP-NAME}}:
+def {{APP-NAME}}():
     pass

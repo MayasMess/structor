@@ -15,7 +15,7 @@ BASE = {
             "app > static": [],
         },
 
-        "startapp": {
+        "addmodule": {
             "app > modules > {{APP-NAME}}": [
                 "__init__.py",
                 "{{APP-NAME}}.py",

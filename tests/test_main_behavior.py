@@ -13,13 +13,14 @@ class TestStructor(TestCase):
         pass
 
     def test_generate(self):
-        structure_1 = structure_interpreter(self.BASE, ['hello_app'])
-        generate(structure_1, 'startapp', ['hello_app'])
+        template = read_template_if_exists()
+        structure_1 = structure_interpreter(template, ['hello_app'])
+        generate(structure_1, 'addmodule', ['hello_app'])
         shutil.rmtree('app')
 
     def test_generate__params_missing(self):
         structure_1 = structure_interpreter(self.BASE, ['hello_app'])
-        self.assertRaises(UsageError, generate, structure_1, 'startapp')
+        self.assertRaises(UsageError, generate, structure_1, 'addmodule')
 
     def test_generate__command_not_exists(self):
         structure_1 = structure_interpreter(self.BASE)
@@ -38,7 +39,7 @@ class TestStructor(TestCase):
                 'controllers.py'
             ]
         }
-        self.assertEqual(expected_result, structure_1.commands.get('startapp'))
+        self.assertEqual(expected_result, structure_1.commands.get('addmodule'))
         expected_result = {
             'app > modules > my_first_app > my_first_app.py': File('my_template_file.py.struct',
                                                                    'def my_first_app:\n    pass')}
