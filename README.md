@@ -38,7 +38,7 @@ pipx install structor
 Create your template
 -
 Create your "template.yaml" file in a folder named ".structor" or you can simply run the command "structor init" to initialize a sample template. this will generate the folder and the yaml file.
-- In this example, the command "structor run startproject" will create all the folders and the files in the init section and the command "structor run addmodule my_new_module" will create new modules/components
+- In this example, the command "structor run startproject" will create all the folders and the files in the startproject section and the command "structor run addmodule my_new_module" will create new modules/components
 ```yaml
 ---
 commands:
