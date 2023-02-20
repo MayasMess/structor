@@ -1,27 +1,11 @@
-# Structor
-Simple library that allow you to create templates of folders/files structure and generate them from a cli (like done in angular, django, react...)
+<p align="center">
+  <a><img src="static/structor.png" alt="SQLModel"></a>
+</p>
+<p align="center">
+    <em>Simple library that allow you to create templates of folders/files structure and generate them from a cli (like done in angular, django, react...)</em>
+</p>
 
-```shell script
-..... README.md
-..... app
-	..... __init__.py
-	..... controllers
-		..... __init__.py
-		..... users_controller.py
-	..... jobs
-		..... user_job.py
-	..... models
-		..... user.py
-	..... views
-		..... users
-			..... index.html
-..... bin
-	..... start.sh
-..... celery_worker.py
-..... instance
-	..... development.cfg
-..... main.py
-```
+---
 
 Installation:
 -
