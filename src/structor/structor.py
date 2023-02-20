@@ -1,13 +1,13 @@
 import os.path
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, List
 
 import typer
 import yaml
 from click.exceptions import UsageError, BadParameter
 
-from src.structor import base_commands
-from src.structor import utils
+from . import base_commands
+from . import utils
 
 app = typer.Typer(pretty_exceptions_show_locals=False)
 
@@ -37,7 +37,7 @@ def read_template_if_exists() -> dict:
                 return parsed_yaml
 
 
-def structure_interpreter(structure_dict: dict, args: list[str] = None) -> Structure:
+def structure_interpreter(structure_dict: dict, args: List[str] = None) -> Structure:
     """
     Interpret a dict of commands and return a structure object
     :param structure_dict: dict of commands and values to replace
@@ -83,7 +83,7 @@ def structure_interpreter(structure_dict: dict, args: list[str] = None) -> Struc
     return structure_res
 
 
-def _get_needed_inner_commands(structure: Structure, command: str) -> list[str]:
+def _get_needed_inner_commands(structure: Structure, command: str) -> List[str]:
 
     def matching_name(val: str) -> str:
         result = None
@@ -114,7 +114,7 @@ def add_content_to_files(structure: Structure):
                 f.write(file.content)
 
 
-def generate(structure_obj: Structure, command: str, params: list[str] = None) -> None:
+def generate(structure_obj: Structure, command: str, params: List[str] = None) -> None:
     """
     Generate all the folders and files
     :param structure_obj: structure object with all necessary data
@@ -150,7 +150,7 @@ def init():
 
 
 @app.command()
-def run(params: list[str]):
+def run(params: List[str]):
     command = params.pop(0)
     template = read_template_if_exists()
     if template is None:
@@ -159,5 +159,5 @@ def run(params: list[str]):
     generate(structure, command, params)
 
 
-if __name__ == '__main__':
+def main():
     app()
