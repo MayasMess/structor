@@ -1,5 +1,5 @@
 <p align="center">
-  <a><img src="static/structor.png" alt="SQLModel"></a>
+  <a><img src="static/structor.png" alt="Structor"></a>
 </p>
 <p align="center">
     <em>Simple library that allow you to create templates of folders/files structure and generate them from a cli (like done in angular, django, react...)</em>
@@ -35,9 +35,11 @@ python -m pipx ensurepath
 pipx install structor
 ```
 
-Create your template
+Initialization
 -
-Create your "template.yaml" file in a folder named ".structor" or you can simply run the command "structor init" to initialize a sample template. this will generate the folder and the yaml file.
+Run the command "structor init" to initialize a sample template. this will generate the folder and the yaml file.
+![](static/init.gif)
+
 - In this example, the command "structor run startproject" will create all the folders and the files in the startproject section and the command "structor run addmodule my_new_module" will create new modules/components
 ```yaml
 ---

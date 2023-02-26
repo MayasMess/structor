@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="structor",
-    version="1.0.3",
+    version="1.0.4",
     author="Mayas Nova",
     author_email="test@test.com",
     description="Simple package that allow you to create templates of folders/files structure and generate them from a cli (like done in angular, django, react...)",

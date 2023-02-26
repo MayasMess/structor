@@ -147,6 +147,7 @@ def init():
     utils.create_dirs_if_not_exists(f"{os.getcwd()}/.structor")
     with open(f"{os.getcwd()}/.structor/template.yaml", 'w') as yaml_file:
         yaml.dump(base_commands.BASE, yaml_file, default_flow_style=False)
+    print("Basic template created in the folder .structor!")
 
 
 @app.command()
@@ -154,7 +155,7 @@ def run(params: List[str]):
     command = params.pop(0)
     template = read_template_if_exists()
     if template is None:
-        raise UsageError("Plese run the 'ini' command to generate '.structor/template.yaml' file")
+        raise UsageError("Please run the 'ini' command to generate '.structor/template.yaml' file")
     structure = structure_interpreter(template, params)
     generate(structure, command, params)
 

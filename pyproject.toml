@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "structor"
-version = "1.0.3"
+version = "1.0.4"
 description = "Simple package that allow you to create templates of folders/files structure and generate them from a cli (like done in angular, django, react...)"
 readme = "README.md"
 authors = [{ name = "Mayas Nova" }]
